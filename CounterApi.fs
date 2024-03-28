@@ -17,13 +17,6 @@ open sharpinoCounter.CounterEvents
 open sharpinoCounter.CounterCommands
 
 module SharpinoCounterApi =
-    let connection = 
-        "Server=127.0.0.1;"+
-        "Database=es_01;" +
-        "User Id=safe;"+
-        "Password=safe;"
-
-    open Sharpino.MemoryStorage
 
     let doNothingBroker =
         { 
@@ -35,33 +28,38 @@ module SharpinoCounterApi =
         // let storage = MemoryStorage()
         let counterStateViewer =
             getStorageFreshStateViewer<Counter, CounterEvents> storage
+
+        let runCounterCommand cmd =
+            cmd 
+            |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
+
         member this.Increment() =
-            ResultCE.result
+            result
                 {
                     return!
                         Increment ()
-                        |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
+                        |> runCounterCommand 
                 }
         member this.Decrement() =
-            ResultCE.result
+            result
                 {
                     return! 
                         Decrement ()
-                        |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
+                        |> runCounterCommand
                 }
         member this.Clear() =
-            ResultCE.result
+            result
                 {
                     return!
                         Clear ()
-                        |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
+                        |> runCounterCommand
                 }
         member this.GetState() =
-            ResultCE.result
+            result
                 {
-                    let! (_, state, _, _) = 
+                    return! 
                         counterStateViewer ()
-                    return state.State
+                        |> Result.map (fun (_, state, _, _) -> state.State)
                 }
 
 

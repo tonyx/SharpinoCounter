@@ -40,10 +40,10 @@ let tests =
         eventStore.Reset Counter.Version Counter.StorageName
 
     testList "samples" [
-        multipleTestCase "initialize counter and state is zero " testConfigs <| fun (storage, _, _) ->
-            Setup(storage)
+        multipleTestCase "initialize counter and state is zero " testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi storage
+            let counterApi = SharpinoCounterApi eventStore
 
             // when
             let state = counterApi.GetState()
