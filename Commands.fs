@@ -1,0 +1,30 @@
+
+namespace sharpinoCounter
+open System
+open FSharpPlus
+open FsToolkit.ErrorHandling
+open Sharpino.Definitions
+open Sharpino.Utils
+open Sharpino
+open Sharpino.Core
+open sharpinoCounter.Counter
+open sharpinoCounter.CounterEvents
+
+module CounterCommands =
+    type CounterCommands =
+        | Increment of unit
+        | Decrement of unit
+        | Clear of unit
+            interface Command<Counter, CounterEvents> with
+                member this.Execute (counter: Counter) =
+                    match this with
+                    | Increment _ -> 
+                        counter.Increment()
+                        |> Result.map (fun _ -> [Incremented ()])
+                    | Decrement _ ->
+                        counter.Decrement()
+                        |> Result.map (fun _ -> [Decremented()])
+                    | Clear _ ->
+                        counter.Clear()
+                        |> Result.map (fun _ -> [Cleared()])
+                member this.Undoer = None
