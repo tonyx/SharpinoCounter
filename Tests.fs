@@ -13,19 +13,38 @@ open sharpinoCounter
 open sharpinoCounter.SharpinoCounterApi
 open Sharpino.Cache
 open sharpinoCounter.Counter
-
-
+open Sharpino
+open Sharpino.MemoryStorage
+open Sharpino.PgStorage
+open Sharpino.TestUtils
+open Sharpino.Storage
 
 [<Tests>]
 let tests =
-    let Setup() =
+    let connection = 
+        "Server=127.0.0.1;"+
+        "Database=es_counter;" +
+        "User Id=safe;"+
+        "Password=safe;"
+
+    let memoryStorage: IEventStore = MemoryStorage()
+    let pgStorage = PgEventStore(connection)
+
+    let testConfigs = [
+        (memoryStorage, 0, 0)
+        // (pgStorage, 1, 1) // uncomment to test with Postgres
+    ]
+
+
+    let Setup(eventStore: IEventStore) =
         StateCache<Counter>.Instance.Clear()
+        eventStore.Reset Counter.Version Counter.StorageName
 
     testList "samples" [
-        testCase "initialize counter and state is zero " <| fun _ ->
-            Setup()
+        multipleTestCase "initialize counter and state is zero " testConfigs <| fun (storage, _, _) ->
+            Setup(storage)
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi storage
 
             // when
             let state = counterApi.GetState()
@@ -34,10 +53,10 @@ let tests =
             Expect.isOk state "should be ok"
             Expect.equal state.OkValue 0 "should be zero"
 
-        testCase "initialize, increment the counter and the state is one " <| fun _ ->
-            Setup()
+        multipleTestCase "initialize, increment the counter and the state is one " testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi eventStore
             let state = counterApi.GetState()
 
             // when
@@ -48,10 +67,10 @@ let tests =
             Expect.isOk state "should be ok"
             Expect.equal state.OkValue 1 "should be zero"
 
-        testCase "initialize, increment and decrement the counter and the state is zero " <| fun _ ->
-            Setup()
+        multipleTestCase "initialize, increment and decrement the counter and the state is zero - OK " testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi eventStore
             let state = counterApi.GetState()
 
             // when
@@ -63,10 +82,10 @@ let tests =
             Expect.isOk state "should be ok"
             Expect.equal state.OkValue 0 "should be zero"
 
-        testCase "increment up to 99 - Ok" <| fun _ ->
-            Setup()
+        multipleTestCase "increment up to 99 - Ok" testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi eventStore
 
             // when
             let _ =
@@ -78,10 +97,10 @@ let tests =
             Expect.isOk state "should be ok"
             Expect.equal state.OkValue 99 "should be 99"
 
-        testCase "can't increment from 99 to 100 - Error" <| fun _ ->
-            Setup()
+        multipleTestCase "can't increment from 99 to 100 - Error" testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi eventStore
 
             // when
             let _ =
@@ -94,10 +113,10 @@ let tests =
             Expect.isError result "should be error"
             Expect.equal (getError result) "must be lower than 99" "should be 'must be lower than 99'"
 
-        testCase "can't decrement from 0 to -1 - Error" <| fun _ ->
-            Setup()
+        multipleTestCase "can't decrement from 0 to -1 - Error" testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi eventStore
 
             // when
             let result = counterApi.Decrement()
@@ -106,10 +125,10 @@ let tests =
             Expect.isError result "should be error"
             Expect.equal (getError result) "must be greater than 0" "should be 'must be greater than 0'"
 
-        testCase "increment and clear" <| fun _ ->
-            Setup()
+        multipleTestCase "increment and clear" testConfigs <| fun (eventStore, _, _) ->
+            Setup eventStore
             // given
-            let counterApi = SharpinoCounterApi()
+            let counterApi = SharpinoCounterApi  eventStore
 
             // when
             let _ = counterApi.Increment()

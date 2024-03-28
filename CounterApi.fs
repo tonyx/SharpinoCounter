@@ -17,6 +17,12 @@ open sharpinoCounter.CounterEvents
 open sharpinoCounter.CounterCommands
 
 module SharpinoCounterApi =
+    let connection = 
+        "Server=127.0.0.1;"+
+        "Database=es_01;" +
+        "User Id=safe;"+
+        "Password=safe;"
+
     open Sharpino.MemoryStorage
 
     let doNothingBroker =
@@ -25,8 +31,8 @@ module SharpinoCounterApi =
             notifyAggregate = None
         }
 
-    type SharpinoCounterApi() =
-        let storage = MemoryStorage()
+    type SharpinoCounterApi(storage: IEventStore) =
+        // let storage = MemoryStorage()
         let counterStateViewer =
             getStorageFreshStateViewer<Counter, CounterEvents> storage
         member this.Increment() =

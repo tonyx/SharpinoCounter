@@ -172,4 +172,5 @@ ALTER TABLE ONLY public.snapshots_01_counter
 --
 
 INSERT INTO public.schema_migrations (version) VALUES
-    ('20240328125544');
+    ('20240328125544'),
+    ('20240328142748');
