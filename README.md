@@ -1,6 +1,6 @@
 # Sharpino Counter
 
-Example of Sharpino Counter
+Example of a Counter with Sharpino.
 
 ## Table of Contents
 
