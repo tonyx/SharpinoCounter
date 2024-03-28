@@ -16,7 +16,7 @@ module CounterCommands =
         | Decrement of unit
         | Clear of unit
             interface Command<Counter, CounterEvents> with
-                member this.Execute (counter: Counter) =
+                member this.Execute (counter: Counter):  Result<List<CounterEvents>, string> =
                     match this with
                     | Increment _ -> 
                         counter.Increment()

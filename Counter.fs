@@ -13,24 +13,17 @@ module Counter =
     type Counter(state: int) =
         let stateId = Guid.NewGuid()
 
-        static member Deserialize (serializer: ISerializer, json: Json) =
-            serializer.Deserialize<Counter>(json)
-
-        member this.Serialize (serializer: ISerializer) =
-            serializer.Serialize(this)
-
         member this.Increment() =   
-            ResultCE.result
+            result
                 {
-                    let! noUpTo100 =
+                    let! mustBeLowerThan99 =
                         this.State < 99
                         |> Result.ofBool "must be lower than 99"
 
-                    let newState = Counter(state + 1)
-                    return newState
+                    return  Counter(state + 1)
                 }
-        member this.Decrement() =
-            ResultCE.result
+        member this.Decrement (): Result<Counter, string> =
+            result
                 {
                     let! mustBeGreaterThan0 = 
                         this.State > 0
@@ -39,7 +32,7 @@ module Counter =
                     return newState
                 }
         member this.Clear() =
-            ResultCE.result
+            result
                 {
                     let newState = Counter(0)
                     return newState
@@ -53,3 +46,8 @@ module Counter =
 
         static member SnapshotsInterval = 15
         static member Lock = new Object()
+        static member Deserialize (serializer: ISerializer, json: Json) =
+            serializer.Deserialize<Counter>(json)
+
+        member this.Serialize (serializer: ISerializer) =
+            serializer.Serialize(this)

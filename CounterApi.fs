@@ -34,33 +34,17 @@ module SharpinoCounterApi =
             |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
 
         member this.Increment() =
-            result
-                {
-                    return!
-                        Increment ()
-                        |> runCounterCommand 
-                }
+            Increment ()
+                |> runCounterCommand 
         member this.Decrement() =
-            result
-                {
-                    return! 
-                        Decrement ()
-                        |> runCounterCommand
-                }
+            Decrement ()
+            |> runCounterCommand
         member this.Clear() =
-            result
-                {
-                    return!
-                        Clear ()
-                        |> runCounterCommand
-                }
+            Clear ()
+            |> runCounterCommand
         member this.GetState() =
-            result
-                {
-                    return! 
-                        counterStateViewer ()
-                        |> Result.map (fun (_, state, _, _) -> state.State)
-                }
+            counterStateViewer ()
+            |> Result.map (fun (_, state, _, _) -> state.State)
 
 
 
