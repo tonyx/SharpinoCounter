@@ -32,29 +32,23 @@ module SharpinoCounterApi =
         member this.Increment() =
             ResultCE.result
                 {
-                    let command = Increment()
-                    let! result = 
-                        command
+                    return!
+                        Increment ()
                         |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
-                    return result
                 }
         member this.Decrement() =
             ResultCE.result
                 {
-                    let command = Decrement()
-                    let! result = 
-                        command
+                    return! 
+                        Decrement ()
                         |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
-                    return result
                 }
         member this.Clear() =
             ResultCE.result
                 {
-                    let command = Clear()
-                    let! result = 
-                        command
+                    return!
+                        Clear ()
                         |> runCommand<Counter, CounterEvents> storage doNothingBroker counterStateViewer
-                    return result
                 }
         member this.GetState() =
             ResultCE.result
