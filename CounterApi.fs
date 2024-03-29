@@ -35,7 +35,7 @@ module SharpinoCounterApi =
 
         member this.Increment() =
             Increment ()
-                |> runCounterCommand 
+            |> runCounterCommand 
         member this.Decrement() =
             Decrement ()
             |> runCounterCommand
