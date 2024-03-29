@@ -38,6 +38,10 @@ then run the commands:
 dbmate up
 dotnet run
 
+```
+A 6 min reading article about this example can be found 
+[here](https://www.linkedin.com/pulse/example-counter-event-sourcing-sharpino-ino-antonio-lucca-hzlof)
+
 
 
 
