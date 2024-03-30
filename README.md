@@ -5,7 +5,7 @@ Example of a Counter with Sharpino.
 ## Table of Contents
 
 - [Installation](#installation)
-- [Optional Postgres EvenStre](#postgesEventStore)
+- [Optional Postgres EvenStore](#postgesEventStore)
 
 
 ## Installation

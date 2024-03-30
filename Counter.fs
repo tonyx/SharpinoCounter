@@ -6,7 +6,6 @@ open FSharpPlus
 open FsToolkit.ErrorHandling
 open Sharpino.Definitions
 open Sharpino.Utils
-open Sharpino
 
 
 module Counter =
@@ -20,16 +19,15 @@ module Counter =
                         this.State < 99
                         |> Result.ofBool "must be lower than 99"
 
-                    return  Counter(state + 1)
+                    return Counter(state + 1)
                 }
-        member this.Decrement (): Result<Counter, string> =
+        member this.Decrement () =
             result
                 {
                     let! mustBeGreaterThan0 = 
                         this.State > 0
                         |> Result.ofBool "must be greater than 0"
-                    let newState = Counter(state - 1)
-                    return newState
+                    return Counter(state - 1)
                 }
         member this.Clear() =
             result
